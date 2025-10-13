@@ -1,0 +1,2 @@
+# FOMO
+Financial analysis app
