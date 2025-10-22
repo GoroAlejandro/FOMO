@@ -1,3 +1,4 @@
+using Fomo.Application.Services;
 using Fomo.Infraestructure;
 using Fomo.Infraestructure.ExternalServices;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,9 +19,11 @@ builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSet
 
 builder.Services.Configure<TwelveData>(builder.Configuration.GetSection("TwelveData"));
 
-builder.Services.AddScoped<ExternalApiHelper>();
+builder.Services.AddScoped<IExternalApiHelper, ExternalApiHelper>();
 
-builder.Services.AddScoped<TwelveDataService>();
+builder.Services.AddScoped<ITwelveDataService, TwelveDataService>();
+
+builder.Services.AddScoped<IIndicatorService, IndicatorService>();
 
 var app = builder.Build();
 
