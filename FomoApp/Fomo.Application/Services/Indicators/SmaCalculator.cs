@@ -7,7 +7,7 @@
 
             var sma = new List<decimal>();
 
-            if (values == null || values.Count < period)
+            if (values == null || values.Count < period || period == 0)
             {
                 return sma;
             }

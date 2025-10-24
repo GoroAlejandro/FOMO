@@ -9,5 +9,9 @@ namespace Fomo.Application.Services
         BollingerBandsDTO GetBollingerBands(List<ValuesDTO> values, int period, int k);
 
         StochasticDTO GetStochastic(List<ValuesDTO> values, int period, int smaperiod);
+
+        List<decimal> GetRSI(List<ValuesDTO> values, int period);
+
+        List<decimal> GetSmoothedRSI(List <ValuesDTO> values, int period);
     }
 }

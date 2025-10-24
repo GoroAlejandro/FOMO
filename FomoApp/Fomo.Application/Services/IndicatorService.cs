@@ -25,5 +25,17 @@ namespace Fomo.Application.Services
             var calculator = new StochasticCalculator();
             return calculator.CalculateStochastic(values, period, smaperiod);
         }
+
+        public List<decimal> GetRSI (List<ValuesDTO> values, int period)
+        {
+            var calculator = new RsiCalculator();
+            return calculator.CalculateRsi(values, period);
+        }
+
+        public List<decimal> GetSmoothedRSI(List<ValuesDTO> values, int period)
+        {
+            var calculator = new SmoothedRsiCalculator();
+            return calculator.CalculateSmoothedRsi(values, period);
+        }
     }
 }

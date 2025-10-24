@@ -6,7 +6,7 @@ namespace Fomo.Application.Services.Indicators
     {
         public BollingerBandsDTO CalculateBollinger(List<ValuesDTO> values, int period, int k)
         {
-            if (values == null || values.Count < period)
+            if (values == null || values.Count < period || period == 0)
             {
                 return new BollingerBandsDTO
                 {
@@ -26,7 +26,7 @@ namespace Fomo.Application.Services.Indicators
 
             for (int i = period - 1; i < valuesd.Count; i++)
             {
-                var subList = valuesd.Skip(i - period + 1).Take(period).ToList();
+                var subList = valuesd.GetRange(i - period + 1 , period);
 
                 decimal variance = 0;
 

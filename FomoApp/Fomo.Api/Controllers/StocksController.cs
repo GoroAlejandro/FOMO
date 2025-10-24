@@ -107,5 +107,49 @@ namespace Fomo.Api.Controllers
             var stochasticOscillator = _indicatorService.GetStochastic(timeseries.Values, period, smaperiod);
             return Ok(stochasticOscillator);
         }
+
+        [Route("timeseries/{symbol}/rsi/{period:int}")]
+        [ProducesResponseType(typeof(List<decimal>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetStockRSI(string symbol, int period)
+        {
+            if (period < 9 || period > 25)
+            {
+                return BadRequest("Period must be between 9 and 25.");
+            }
+
+            var timeseries = await _twelveDataService.GetTimeSeries(symbol);
+
+            if (period > timeseries.Values.Count)
+            {
+                return BadRequest("Period cannot exceed the number of elements.");
+            }
+
+            var rsi = _indicatorService.GetRSI(timeseries.Values, period);
+            return Ok(rsi);
+        }
+
+        [Route("timeseries/{symbol}/srsi/{period:int}")]
+        [ProducesResponseType(typeof(List<decimal>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetStockSmoothedRSI(string symbol, int period)
+        {
+            if (period < 9 || period > 25)
+            {
+                return BadRequest("Period must be between 9 and 25.");
+            }
+
+            var timeseries = await _twelveDataService.GetTimeSeries(symbol);
+
+            if (period > timeseries.Values.Count)
+            {
+                return BadRequest("Period cannot exceed the number of elements.");
+            }
+
+            var srsi = _indicatorService.GetSmoothedRSI(timeseries.Values, period);
+            return Ok(srsi);
+        }
     }
 }
