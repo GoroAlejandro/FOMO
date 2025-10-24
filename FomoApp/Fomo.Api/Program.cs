@@ -1,9 +1,6 @@
 using Fomo.Application.Services;
 using Fomo.Infraestructure;
 using Fomo.Infraestructure.ExternalServices;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using System.Runtime.CompilerServices;
 
 var builder = WebApplication.CreateBuilder(args);
 

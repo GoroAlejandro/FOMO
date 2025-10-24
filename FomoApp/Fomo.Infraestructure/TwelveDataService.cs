@@ -1,7 +1,6 @@
 ﻿using Fomo.Application.DTO;
 using Fomo.Infraestructure.ExternalServices;
 using Microsoft.Extensions.Options;
-using System.Threading.Tasks;
 
 namespace Fomo.Infraestructure
 {

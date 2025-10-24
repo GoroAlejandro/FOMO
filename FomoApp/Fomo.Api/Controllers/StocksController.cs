@@ -50,19 +50,14 @@ namespace Fomo.Api.Controllers
         {
             if (period < 1)
             {
-                return BadRequest("The period must be greater than zero.");
+                return BadRequest("Period must be greater than zero.");
             }
 
             var timeseries = await _twelveDataService.GetTimeSeries(symbol);
 
-            if (timeseries == null || timeseries.Values == null)
-            {
-                return NotFound($"No data was found for the symbol {symbol}.");
-            }
-
             if (period > timeseries.Values.Count)
             {
-                return BadRequest("The period cannot exceed the number of elements.");
+                return BadRequest("Period cannot exceed the number of elements.");
             }
 
             var sma = _indicatorService.GetSMA(timeseries.Values, period);
@@ -77,23 +72,40 @@ namespace Fomo.Api.Controllers
         {
             if (period < 1 || k < 1 || k > 5)
             {
-                return BadRequest("The period and K must be greater than zero, and K must not exceed 5.");
+                return BadRequest("Period and K must be greater than zero, and K must not exceed 5.");
             }
 
             var timeseries = await _twelveDataService.GetTimeSeries(symbol);
 
-            if (timeseries == null || timeseries.Values == null)
-            {
-                return NotFound($"No data was found for the symbol {symbol}.");
-            }
-
             if (period > timeseries.Values.Count)
             {
-                return BadRequest("The period cannot exceed the number of elements.");
+                return BadRequest("Period cannot exceed the number of elements.");
             }
 
             var bollingerBands = _indicatorService.GetBollingerBands(timeseries.Values, period, k);
             return Ok(bollingerBands);
+        }
+
+        [Route("timeseries/{symbol}/stochastic/{period:int}/{smaperiod:int}")]
+        [ProducesResponseType(typeof(BollingerBandsDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetStochasticOscillator(string symbol, int period, int smaperiod)
+        {
+            if (period < 1 ||  smaperiod < 1)
+            {
+                return BadRequest("Period and smaperiod must be greater than zero");
+            }
+
+            var timeseries = await _twelveDataService.GetTimeSeries(symbol);
+
+            if (period > timeseries.Values.Count)
+            {
+                return BadRequest("Period cannot exceed the number of elements.");
+            }
+
+            var stochasticOscillator = _indicatorService.GetStochastic(timeseries.Values, period, smaperiod);
+            return Ok(stochasticOscillator);
         }
     }
 }

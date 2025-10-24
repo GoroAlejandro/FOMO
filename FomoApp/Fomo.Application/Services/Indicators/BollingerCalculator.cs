@@ -1,10 +1,4 @@
 ﻿using Fomo.Application.DTO;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fomo.Application.Services.Indicators
 {
@@ -12,11 +6,20 @@ namespace Fomo.Application.Services.Indicators
     {
         public BollingerBandsDTO CalculateBollinger(List<ValuesDTO> values, int period, int k)
         {
-            var calculator = new SmaCalculator();
-            var sma = calculator.CalculateSMA(values, period);
+            if (values == null || values.Count < period)
+            {
+                return new BollingerBandsDTO
+                {
+                    UpperBand = new List<decimal>(),
+                    LowerBand = new List<decimal>()
+                };
+            }            
 
             var parser = new ParseListHelper();
-            var valuesd = parser.ParseList(values);
+            var valuesd = parser.ParseList(values, v => v.Close);
+
+            var calculator = new SmaCalculator();
+            var sma = calculator.CalculateSMA(valuesd, period);
 
             var bollingerUpper = new List<decimal>();
             var bollingerLower = new List<decimal>();
