@@ -1,9 +1,4 @@
 ﻿using Fomo.Application.DTO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fomo.Application.Services
 {
@@ -12,5 +7,11 @@ namespace Fomo.Application.Services
         List<decimal> GetSMA(List<ValuesDTO> values, int period);
 
         BollingerBandsDTO GetBollingerBands(List<ValuesDTO> values, int period, int k);
+
+        StochasticDTO GetStochastic(List<ValuesDTO> values, int period, int smaperiod);
+
+        List<decimal> GetRSI(List<ValuesDTO> values, int period);
+
+        List<decimal> GetSmoothedRSI(List <ValuesDTO> values, int period);
     }
 }

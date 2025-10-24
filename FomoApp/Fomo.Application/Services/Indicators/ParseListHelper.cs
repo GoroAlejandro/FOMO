@@ -1,27 +1,29 @@
 ﻿using Fomo.Application.DTO;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
+
 
 namespace Fomo.Application.Services.Indicators
 {
     public class ParseListHelper
     {
-        public List<decimal> ParseList (List<ValuesDTO> values)
+        public List<decimal> ParseList (List<ValuesDTO> values, Func<ValuesDTO, string> property)
         {
+            var valuesStr = values
+                .Select(property)
+                .ToList();
+
             var valuesd = new List<decimal>();
 
-            foreach (ValuesDTO value in values)
+            foreach (string value in valuesStr)
             {
-                decimal closePrice = 0;
-                decimal.TryParse(value.Close, CultureInfo.InvariantCulture, out closePrice);
-                valuesd.Add(closePrice);
+                decimal Price = 0;
+                decimal.TryParse(value, CultureInfo.InvariantCulture, out Price);
+                valuesd.Add(Price);
             }
 
             return valuesd;
         }
+
     }
 }
