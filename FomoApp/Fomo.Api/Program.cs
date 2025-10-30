@@ -1,6 +1,8 @@
 using Fomo.Application.Services;
-using Fomo.Infraestructure;
-using Fomo.Infraestructure.ExternalServices;
+using Fomo.Infrastructure.ExternalServices;
+using Fomo.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,23 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddHttpClient<IExternalApiHelper, ExternalApiHelper>();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.Authority = $"https://{builder.Configuration["Auth0:Domain"]}/";
+    options.Audience = builder.Configuration["Auth0:Audience"];
+});
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddDbContext<EFCoreDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration["ConnectionString:EFCoreDBConnection"]);
+});
 
 builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
 
@@ -32,6 +51,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

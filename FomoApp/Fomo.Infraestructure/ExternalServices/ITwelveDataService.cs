@@ -1,6 +1,6 @@
 ﻿using Fomo.Application.DTO;
 
-namespace Fomo.Infraestructure
+namespace Fomo.Infrastructure.ExternalServices
 {
     public interface ITwelveDataService
     {

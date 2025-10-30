@@ -1,8 +1,7 @@
 ﻿using Fomo.Application.DTO;
-using Fomo.Infraestructure.ExternalServices;
 using Microsoft.Extensions.Options;
 
-namespace Fomo.Infraestructure
+namespace Fomo.Infrastructure.ExternalServices
 {
     public class TwelveDataService : ITwelveDataService
     {

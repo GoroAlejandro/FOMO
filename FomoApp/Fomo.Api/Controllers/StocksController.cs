@@ -1,6 +1,6 @@
 ﻿using Fomo.Application.DTO;
 using Fomo.Application.Services;
-using Fomo.Infraestructure;
+using Fomo.Infrastructure.ExternalServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fomo.Api.Controllers
