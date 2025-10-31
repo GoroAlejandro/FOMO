@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fomo.Infrastructure.Migrations
 {
     [DbContext(typeof(EFCoreDbContext))]
-    [Migration("20251030090335_CreateFomoAppDB")]
+    [Migration("20251031133402_CreateFomoAppDB")]
     partial class CreateFomoAppDB
     {
         /// <inheritdoc />
@@ -115,6 +115,10 @@ namespace Fomo.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
+                    b.Property<string>("Auth0Id")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<bool>("BollingerAlert")
                         .HasColumnType("bit");
 
@@ -142,6 +146,9 @@ namespace Fomo.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.HasKey("UserId");
+
+                    b.HasIndex("Auth0Id")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

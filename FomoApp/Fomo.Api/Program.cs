@@ -1,6 +1,7 @@
 using Fomo.Application.Services;
 using Fomo.Infrastructure.ExternalServices;
 using Fomo.Infrastructure.Persistence;
+using Fomo.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,6 +41,10 @@ builder.Services.AddScoped<IExternalApiHelper, ExternalApiHelper>();
 builder.Services.AddScoped<ITwelveDataService, TwelveDataService>();
 
 builder.Services.AddScoped<IIndicatorService, IndicatorService>();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddScoped<ITradeResultRepository, TradeResultRepository>();
 
 var app = builder.Build();
 

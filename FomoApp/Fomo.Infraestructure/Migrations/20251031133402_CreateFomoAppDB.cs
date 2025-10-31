@@ -17,6 +17,7 @@ namespace Fomo.Infrastructure.Migrations
                 {
                     UserId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Auth0Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
                     ProfilePictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -93,6 +94,12 @@ namespace Fomo.Infrastructure.Migrations
                 name: "IX_TradeResults_UserId",
                 table: "TradeResults",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Auth0Id",
+                table: "Users",
+                column: "Auth0Id",
+                unique: true);
         }
 
         /// <inheritdoc />

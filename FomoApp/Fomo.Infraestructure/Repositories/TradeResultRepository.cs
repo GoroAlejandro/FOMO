@@ -15,12 +15,7 @@ namespace Fomo.Infrastructure.Repositories
 
         public async Task<List<TradeResult>> GetAllAsync()
         {
-            return await _dbContext.TradeResults.Include(tr => tr.TradeMethod).ToListAsync();
-        }
-
-        public async Task<List<TradeResult>> GetUserResultsAsync(int userId)
-        {
-            return await _dbContext.TradeResults.Include(tr => tr.TradeMethod).Where(tr => tr.UserId == userId).ToListAsync();
+            return await _dbContext.TradeResults.Include(tr => tr.TradeMethod).Include(tr => tr.User).ToListAsync();
         }
 
         public async Task InsertAsync(TradeResult tradeResult)
@@ -33,9 +28,8 @@ namespace Fomo.Infrastructure.Repositories
             _dbContext.TradeResults.Update(tradeResult);
         }
 
-        public async Task DeleteAsync(int id)
-        {
-            var tradeResult = await _dbContext.TradeResults.FindAsync(id);
+        public async Task DeleteAsync(TradeResult tradeResult)
+        {            
             if (tradeResult != null)
             {
                 _dbContext.TradeResults.Remove(tradeResult);

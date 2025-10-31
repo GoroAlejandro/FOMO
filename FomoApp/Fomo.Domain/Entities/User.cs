@@ -6,6 +6,8 @@ namespace Fomo.Domain.Entities
     {
         public int UserId { get; set; }
 
+        public required string Auth0Id { get; set; }
+
         [MaxLength(50)]
         public string Name { get; set; } = string.Empty;
 

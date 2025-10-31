@@ -13,11 +13,11 @@ namespace Fomo.Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<User?> GetByEmailAsync(string email)
+        public async Task<User?> GetByAuth0IdAsync(string auth0id)
         {
             var user = await _dbContext.Users
                 .Include(u => u.TradeResults)
-                .FirstOrDefaultAsync(o => o.Email == email);
+                .FirstOrDefaultAsync(u => u.Auth0Id == auth0id);
 
             return user;
         }
@@ -36,9 +36,9 @@ namespace Fomo.Infrastructure.Repositories
             _dbContext.Users.Update(user);
         }
 
-        public async Task DeleteAsync(string email)
+        public async Task DeleteAsync(string auth0id)
         {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Auth0Id == auth0id);
             if (user != null)
             {
                 _dbContext.Users.Remove(user);

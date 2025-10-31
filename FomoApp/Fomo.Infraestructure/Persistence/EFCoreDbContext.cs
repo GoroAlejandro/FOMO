@@ -17,6 +17,10 @@ namespace Fomo.Infrastructure.Persistence
                 .HasForeignKey(tr => tr.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Auth0Id)
+                .IsUnique();
+
             modelBuilder.Entity<TradeResult>()
                 .HasOne(tr => tr.TradeMethod)
                 .WithOne(tm => tm.TradeResult)

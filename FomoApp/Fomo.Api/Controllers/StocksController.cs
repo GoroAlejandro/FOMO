@@ -27,7 +27,7 @@ namespace Fomo.Api.Controllers
             return Ok(stocks);
         }
 
-        [Route("timeseries/{symbol}")]
+        [HttpGet("timeseries/{symbol}")]
         [ProducesResponseType(typeof(ValuesResponseDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetStockTimeSeries(string symbol)
@@ -42,7 +42,7 @@ namespace Fomo.Api.Controllers
             return Ok(timeseries);
         }
 
-        [Route("timeseries/{symbol}/sma/{period:int}")]
+        [HttpGet("timeseries/{symbol}/sma/{period:int}")]
         [ProducesResponseType(typeof(List<decimal>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -64,7 +64,7 @@ namespace Fomo.Api.Controllers
             return Ok(sma);
         }
 
-        [Route("timeseries/{symbol}/bollinger/{period:int}/{k:int}")]
+        [HttpGet("timeseries/{symbol}/bollinger/{period:int}/{k:int}")]
         [ProducesResponseType(typeof(BollingerBandsDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -86,7 +86,7 @@ namespace Fomo.Api.Controllers
             return Ok(bollingerBands);
         }
 
-        [Route("timeseries/{symbol}/stochastic/{period:int}/{smaperiod:int}")]
+        [HttpGet("timeseries/{symbol}/stochastic/{period:int}/{smaperiod:int}")]
         [ProducesResponseType(typeof(BollingerBandsDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -108,7 +108,7 @@ namespace Fomo.Api.Controllers
             return Ok(stochasticOscillator);
         }
 
-        [Route("timeseries/{symbol}/rsi/{period:int}")]
+        [HttpGet("timeseries/{symbol}/rsi/{period:int}")]
         [ProducesResponseType(typeof(List<decimal>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -130,7 +130,7 @@ namespace Fomo.Api.Controllers
             return Ok(rsi);
         }
 
-        [Route("timeseries/{symbol}/srsi/{period:int}")]
+        [HttpGet("timeseries/{symbol}/srsi/{period:int}")]
         [ProducesResponseType(typeof(List<decimal>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
