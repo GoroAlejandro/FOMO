@@ -17,7 +17,7 @@ namespace Fomo.Application.DTO
         public int NumberOfStocks { get; set; }
         public DateTime EntryDate { get; set; }
         public DateTime ExitDate { get; set; }
-        public TradeMethod? TradeMethod { get; set; }
+        public TradeMethodDTO? TradeMethod { get; set; }
         public string? UserName { get; set; }
         public int? UserId { get; set; }
     }

@@ -1,3 +1,4 @@
+using Fomo.Api.Helpers;
 using Fomo.Application.Services;
 using Fomo.Infrastructure.ExternalServices;
 using Fomo.Infrastructure.Persistence;
@@ -7,10 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 builder.Services.AddHttpClient<IExternalApiHelper, ExternalApiHelper>();
@@ -46,12 +47,17 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<ITradeResultRepository, TradeResultRepository>();
 
+builder.Services.AddScoped<IUserValidateHelper, UserValidateHelper>();
+
+builder.Services.AddScoped<ITradeResultValidateHelper, TradeResultValidateHelper>();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

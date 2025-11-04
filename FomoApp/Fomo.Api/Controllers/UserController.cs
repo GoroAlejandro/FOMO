@@ -1,6 +1,6 @@
-﻿using Fomo.Application.DTO;
+﻿using Fomo.Api.Helpers;
+using Fomo.Application.DTO;
 using Fomo.Domain.Entities;
-using Fomo.Infrastructure.Persistence;
 using Fomo.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,13 +12,13 @@ namespace Fomo.Api.Controllers
     [Route("api/[controller]")]
     public class UserController : Controller
     {
-        private readonly EFCoreDbContext _dbContext;
         private readonly IUserRepository _userRepository;
+        private readonly IUserValidateHelper _userValidateHelper;
 
-        public UserController (EFCoreDbContext dbContext, IUserRepository userRepository)
+        public UserController (IUserRepository userRepository, IUserValidateHelper userValidateHelper)
         {
-            _dbContext = dbContext;
             _userRepository = userRepository;
+            _userValidateHelper = userValidateHelper;
         }
 
         [Authorize]
@@ -58,30 +58,43 @@ namespace Fomo.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Details()
         {
-            var auth0Id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier || c.Type == "sub")?.Value;
+            var userData = await _userValidateHelper.GetAuthenticatedUserAsync(User);
+            if (userData == null) return NotFound("Invalid User");
 
-            if (auth0Id == null)
+            var tradeResultsDTO = new List<TradeResultDTO>();
+            if (userData.TradeResults != null)
             {
-                return BadRequest("Invalid UserId");
-            }
-
-            var userdata = await _userRepository.GetByAuth0IdAsync(auth0Id);
-
-            if (userdata == null)
-            {
-                return NotFound();
+                tradeResultsDTO = userData.TradeResults.Select(tr => new TradeResultDTO
+                {
+                    Symbol = tr.Symbol,
+                    EntryPrice = tr.EntryPrice,
+                    ExitPrice = tr.ExitPrice,
+                    Profit = tr.Profit,
+                    NumberOfStocks = tr.NumberOfStocks,
+                    EntryDate = tr.EntryDate,
+                    ExitDate = tr.ExitDate,
+                    TradeMethod = new TradeMethodDTO
+                    {
+                        Sma = tr.TradeMethod?.Sma ?? false,
+                        Bollinger = tr.TradeMethod?.Bollinger ?? false,
+                        Stochastic = tr.TradeMethod?.Stochastic ?? false,
+                        Rsi = tr.TradeMethod?.Rsi ?? false,
+                        Other = tr.TradeMethod?.Other ?? false,
+                    },
+                    UserName = tr.User?.Name,
+                }).ToList();
             }
 
             var userDto = new UserDTO()
             {
-                Name = userdata.Name,
-                Email = userdata.Email,
-                ProfilePictureUrl = userdata.ProfilePictureUrl,
-                SmaAlert = userdata.SmaAlert,
-                BollingerAlert = userdata.BollingerAlert,
-                StochasticAlert = userdata.StochasticAlert,
-                RsiAlert = userdata.RsiAlert,
-                TradeResults = userdata.TradeResults
+                Name = userData.Name,
+                Email = userData.Email,
+                ProfilePictureUrl = userData.ProfilePictureUrl,
+                SmaAlert = userData.SmaAlert,
+                BollingerAlert = userData.BollingerAlert,
+                StochasticAlert = userData.StochasticAlert,
+                RsiAlert = userData.RsiAlert,
+                TradeResults = tradeResultsDTO,
             };
 
             return Ok(userDto);
@@ -94,19 +107,8 @@ namespace Fomo.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Edit([FromBody] UserDTO userUpdate)
         {
-            var auth0Id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier || c.Type == "sub")?.Value;
-
-            if (auth0Id == null)
-            {
-                return BadRequest("Invalid UserId");
-            }
-
-            var userData = await _userRepository.GetByAuth0IdAsync(auth0Id);
-
-            if (userData == null)
-            {
-                return NotFound();
-            }
+            var userData = await _userValidateHelper.GetAuthenticatedUserAsync(User);
+            if (userData == null) return NotFound("Invalid User");
 
             if (!String.IsNullOrEmpty(userUpdate.Name)) userData.Name = userUpdate.Name;
             if (userUpdate.ProfilePictureUrl != null) userData.ProfilePictureUrl = userUpdate.ProfilePictureUrl;
@@ -122,17 +124,13 @@ namespace Fomo.Api.Controllers
         }
 
         [Authorize]
-        [HttpPatch("delete")]
+        [HttpDelete("delete")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete()
         {
             var auth0Id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier || c.Type == "sub")?.Value;
-
-            if (auth0Id == null)
-            {
-                return BadRequest("Invalid UserId");
-            }
+            if (auth0Id == null) return BadRequest("Invalid UserId");
 
             await _userRepository.DeleteAsync(auth0Id);
             await _userRepository.SaveAsync();

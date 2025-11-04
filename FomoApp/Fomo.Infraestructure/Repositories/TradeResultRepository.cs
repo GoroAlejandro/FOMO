@@ -13,6 +13,15 @@ namespace Fomo.Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
+        public async Task<TradeResult?> GetByIdAsync(int id)
+        {
+            var tradeResult = await _dbContext.TradeResults
+                .Include(tr => tr.TradeMethod)
+                .FirstOrDefaultAsync(tr => tr.TradeResultId == id);
+
+            return tradeResult;
+        }
+
         public async Task<List<TradeResult>> GetAllAsync()
         {
             return await _dbContext.TradeResults.Include(tr => tr.TradeMethod).Include(tr => tr.User).ToListAsync();

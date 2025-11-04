@@ -1,26 +1,25 @@
-﻿using Fomo.Application.DTO;
+﻿using Fomo.Api.Helpers;
+using Fomo.Application.DTO;
 using Fomo.Domain.Entities;
-using Fomo.Infrastructure.Persistence;
 using Fomo.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Fomo.Api.Controllers
 {
     [Route("api/[controller]")]
     public class TradeResultController : Controller
     {
-        private readonly EFCoreDbContext _dbContext;
         private readonly ITradeResultRepository _tradeResultRepository;
-        private readonly IUserRepository _userRepository;
+        private readonly IUserValidateHelper _userValidateHelper;
+        private readonly ITradeResultValidateHelper _tradeResultValidateHelper;
 
-        public TradeResultController(EFCoreDbContext dbContext, ITradeResultRepository tradeResultRepository,
-            IUserRepository userRepository)
+        public TradeResultController(ITradeResultRepository tradeResultRepository, IUserValidateHelper userValidateHelper,
+            ITradeResultValidateHelper tradeResultValidateHelper)
         {
-            _dbContext = dbContext;
             _tradeResultRepository = tradeResultRepository;
-            _userRepository = userRepository;
+            _userValidateHelper = userValidateHelper;
+            _tradeResultValidateHelper = tradeResultValidateHelper;
         }
 
         [Authorize]
@@ -30,24 +29,12 @@ namespace Fomo.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] TradeResultDTO tradeResult)
         {
-            if (tradeResult == null)
-            {
-                return BadRequest("Invalid tradeResult");
-            }
+            if (tradeResult == null) return BadRequest("Invalid tradeResult");
 
-            var auth0Id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier || c.Type == "sub")?.Value;
+            if (!_tradeResultValidateHelper.IsValidTradeResultDTO(tradeResult)) return BadRequest("Invalid tradeResult");
 
-            if (auth0Id == null)
-            {
-                return BadRequest("Invalid UserId");
-            }
-
-            var userData = await _userRepository.GetByAuth0IdAsync(auth0Id);
-
-            if (userData == null)
-            {
-                return NotFound();
-            }
+            var userData = await _userValidateHelper.GetAuthenticatedUserAsync(User);
+            if (userData == null) return NotFound("Invalid User");
 
             var newTradeResult = new TradeResult()
             {
@@ -68,16 +55,12 @@ namespace Fomo.Api.Controllers
                 }
             };
 
-            if (IsInvalidTradeResult(newTradeResult))
-            {
-                return BadRequest("TradeResult data is invalid");
-            }
-
             newTradeResult.CalculateProfit();
+            
             await _tradeResultRepository.InsertAsync(newTradeResult);
             await _tradeResultRepository.SaveAsync();
 
-            return Ok();
+            return Ok("TradeResult created succesfully");
         }
                 
         [HttpGet("all")]
@@ -86,11 +69,7 @@ namespace Fomo.Api.Controllers
         public async Task<IActionResult> AllResults()
         {
             var tradeResults = await _tradeResultRepository.GetAllAsync();
-
-            if (tradeResults == null)
-            {
-                return NotFound();
-            }
+            if (tradeResults == null) return NotFound("No TradeResults found");
 
             var tradeResultsDTO = tradeResults.Select(tr => new TradeResultDTO
             {
@@ -101,9 +80,16 @@ namespace Fomo.Api.Controllers
                 NumberOfStocks = tr.NumberOfStocks,
                 EntryDate = tr.EntryDate,
                 ExitDate = tr.ExitDate,
-                TradeMethod = tr.TradeMethod,
+                TradeMethod = new TradeMethodDTO
+                {
+                    Sma = tr.TradeMethod?.Sma ?? false,
+                    Bollinger = tr.TradeMethod?.Bollinger ?? false,
+                    Stochastic = tr.TradeMethod?.Stochastic ?? false,
+                    Rsi = tr.TradeMethod?.Rsi ?? false,
+                    Other = tr.TradeMethod?.Other ?? false,
+                },
                 UserName = tr.User?.Name,
-            });
+            }).ToList();
 
             return Ok(tradeResultsDTO);
         }
@@ -115,41 +101,16 @@ namespace Fomo.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Edit([FromBody] TradeResultDTO Update)
         {
-            if (Update == null)
-            {
-                return BadRequest("TradeResult cannot be null");
-            }
+            if (Update == null) return BadRequest("TradeResult cannot be null");
+            if (Update.TradeResultId == null) return BadRequest("Id cannot be null");
 
-            if (Update.TradeResultId == null)
-            {
-                return BadRequest("Id cannot be null");
-            }
+            var userData = await _userValidateHelper.GetAuthenticatedUserAsync(User);
+            if (userData == null) return NotFound("Invalid User");
 
-            var auth0Id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier || c.Type == "sub")?.Value;
+            var tradeResult = await _tradeResultRepository.GetByIdAsync(Update.TradeResultId.Value);
+            if (tradeResult == null) return BadRequest("Invalid TradeResultId");
 
-            if (auth0Id == null)
-            {
-                return BadRequest("Invalid UserId");
-            }
-
-            var userData = await _userRepository.GetByAuth0IdAsync(auth0Id);
-
-            if (userData == null)
-            {
-                return NotFound("User not found");
-            }
-
-            var tradeResult = await _dbContext.TradeResults.FindAsync(Update.TradeResultId);
-
-            if (tradeResult == null)
-            {
-                return BadRequest("Invalid TradeResultId");
-            }
-
-            if (tradeResult.UserId != userData.UserId)
-            {
-                return BadRequest("Only the creator can edit the post");
-            }
+            if (tradeResult.UserId != userData.UserId) return BadRequest("Only the creator can edit the post");
 
             if (Update.Symbol != null && Update.Symbol != "") tradeResult.Symbol = Update.Symbol;
             if (Update.EntryPrice > 0) tradeResult.EntryPrice = Update.EntryPrice;
@@ -158,8 +119,16 @@ namespace Fomo.Api.Controllers
             if (Update.EntryDate > new DateTime(2025, 1, 1, 0, 0, 0)) tradeResult.EntryDate = Update.EntryDate;
             if (Update.ExitDate > new DateTime(2025, 1, 1, 0, 0, 0) && Update.ExitDate > tradeResult.EntryDate)
                 tradeResult.ExitDate = Update.ExitDate;
-            if (Update.TradeMethod != null) tradeResult.TradeMethod = Update.TradeMethod;
+            if (Update.TradeMethod != null && tradeResult.TradeMethod != null)
+            {
+                tradeResult.TradeMethod.Sma = Update.TradeMethod.Sma;
+                tradeResult.TradeMethod.Bollinger = Update.TradeMethod.Bollinger;
+                tradeResult.TradeMethod.Stochastic = Update.TradeMethod.Stochastic;
+                tradeResult.TradeMethod.Rsi = Update.TradeMethod.Rsi;
+                tradeResult.TradeMethod.Other = Update.TradeMethod.Other;
+            }
 
+            tradeResult.CalculateProfit();
             await _tradeResultRepository.UpdateAsync(tradeResult);
             await _tradeResultRepository.SaveAsync();
 
@@ -167,59 +136,26 @@ namespace Fomo.Api.Controllers
         }
 
         [Authorize]
-        [HttpPatch("delete")]
+        [HttpDelete("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Delete([FromBody] int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id < 0)
-            {
-                return BadRequest("Invalid TradeResultId");
-            }
+            if (id < 0) return BadRequest("Invalid TradeResultId");
 
-            var auth0Id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier || c.Type == "sub")?.Value;
+            var userData = await _userValidateHelper.GetAuthenticatedUserAsync(User);
+            if (userData == null) return NotFound("Invalid User");
 
-            if (auth0Id == null)
-            {
-                return BadRequest("Invalid UserId");
-            }
+            var tradeResult = await _tradeResultRepository.GetByIdAsync(id);
+            if (tradeResult == null) return NotFound("TradeResult not found");
 
-            var userData = await _userRepository.GetByAuth0IdAsync(auth0Id);
-
-            if (userData == null)
-            {
-                return NotFound("User not found");
-            }
-
-            var tradeResult = await _dbContext.TradeResults.FindAsync(id);
-
-            if (tradeResult == null)
-            {
-                return NotFound("TradeResult not found");
-            }
-
-            if (tradeResult.UserId != userData.UserId)
-            {
-                return BadRequest("Only the creator can delete the post");
-            }
+            if (tradeResult.UserId != userData.UserId) return BadRequest("Only the creator can delete this post");
 
             await _tradeResultRepository.DeleteAsync(tradeResult);
             await _tradeResultRepository.SaveAsync();
 
-            return Ok();
-        }
-
-        private bool IsInvalidTradeResult(TradeResult newTradeResult)
-        {
-            if (string.IsNullOrEmpty(newTradeResult.Symbol)) return true;
-            if (newTradeResult.EntryPrice < 0 || newTradeResult.ExitPrice < 0) return true;
-            if (newTradeResult.NumberOfStocks < 0) return true;
-            if (newTradeResult.EntryDate < new DateTime(2025, 1, 1)) return true;
-            if (newTradeResult.ExitDate < new DateTime(2025, 1, 1)) return true;
-            if (newTradeResult.ExitDate < newTradeResult.EntryDate) return true;
-
-            return false;
+            return Ok("TradeResult deleted succesfully");
         }
     }
 }
