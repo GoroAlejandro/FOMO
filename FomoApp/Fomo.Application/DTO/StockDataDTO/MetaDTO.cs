@@ -1,14 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Fomo.Application.DTO
+namespace Fomo.Application.DTO.StockDataDTO
 {
-    public record StockDTO
+    public record MetaDTO
     {
         [JsonPropertyName("symbol")]
         public string Symbol { get; init; } = string.Empty;
-
-        [JsonPropertyName("name")]
-        public string Name { get; init; } = string.Empty;
 
         [JsonPropertyName("currency")]
         public string Currency { get; init; } = string.Empty;

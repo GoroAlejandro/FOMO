@@ -1,4 +1,4 @@
-﻿namespace Fomo.Infraestructure.ExternalServices
+﻿namespace Fomo.Infrastructure.ExternalServices
 {
     public interface IExternalApiHelper
     {

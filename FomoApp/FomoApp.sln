@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36429.23 d17.14
+VisualStudioVersion = 17.14.36429.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fomo.Api", "Fomo.Api\Fomo.Api.csproj", "{4B7638D9-6410-4F9F-8199-48C05AECE756}"
 EndProject
@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fomo.Application", "Fomo.Ap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fomo.Domain", "Fomo.Domain\Fomo.Domain.csproj", "{698DB926-A6BF-4610-BEEF-DA671F4BD8DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fomo.Infraestructure", "Fomo.Infraestructure\Fomo.Infraestructure.csproj", "{3D37E1A9-9658-4FD1-B5CA-BDD28F5F6C3F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fomo.Infrastructure", "Fomo.Infraestructure\Fomo.Infrastructure.csproj", "{3D37E1A9-9658-4FD1-B5CA-BDD28F5F6C3F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

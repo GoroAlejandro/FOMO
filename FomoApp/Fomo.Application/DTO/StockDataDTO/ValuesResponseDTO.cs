@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Fomo.Application.DTO
+namespace Fomo.Application.DTO.StockDataDTO
 {
     public record ValuesResponseDTO
     {
@@ -11,6 +11,6 @@ namespace Fomo.Application.DTO
         public List<ValuesDTO> Values { get; init; } = new List<ValuesDTO>();
 
         [JsonPropertyName("status")]
-        public  String Status { get; init; } = String.Empty;
+        public  string Status { get; init; } = string.Empty;
     }
 }

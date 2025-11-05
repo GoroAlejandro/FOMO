@@ -1,4 +1,4 @@
-﻿namespace Fomo.Application.DTO
+﻿namespace Fomo.Application.DTO.IndicatorsDTO
 {
     public class StochasticDTO
     {
