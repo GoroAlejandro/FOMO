@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
 
-namespace Fomo.Application.DTO
+namespace Fomo.Application.DTO.StockDataDTO
 {
     public record ValuesDTO
     {

@@ -5,6 +5,10 @@ namespace Fomo.Api.Helpers
 {
     public interface IUserValidateHelper
     {
-        Task<User?> GetAuthenticatedUserAsync(ClaimsPrincipal user);
+        Task<User?> GetFullUserAsync(ClaimsPrincipal user);
+
+        Task<User?> GetOnlyUserAsync(ClaimsPrincipal user);
+
+        Task<User?> GetUserIdAsync(ClaimsPrincipal user);
     }
 }

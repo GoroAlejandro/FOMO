@@ -1,9 +1,9 @@
-﻿using Fomo.Application.DTO;
+﻿using Fomo.Application.DTO.TradeResult;
 
 namespace Fomo.Api.Helpers
 {
     public interface ITradeResultValidateHelper
     {
-        bool IsValidTradeResultDTO(TradeResultDTO tradeResult);
+        bool IsValidTradeResultDTO(TradeResultCreateDTO tradeResult);
     }
 }

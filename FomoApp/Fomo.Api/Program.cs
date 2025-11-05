@@ -5,6 +5,7 @@ using Fomo.Infrastructure.Persistence;
 using Fomo.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 

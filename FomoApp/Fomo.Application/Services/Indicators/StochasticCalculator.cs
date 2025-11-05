@@ -1,4 +1,5 @@
-﻿using Fomo.Application.DTO;
+﻿using Fomo.Application.DTO.IndicatorsDTO;
+using Fomo.Application.DTO.StockDataDTO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;

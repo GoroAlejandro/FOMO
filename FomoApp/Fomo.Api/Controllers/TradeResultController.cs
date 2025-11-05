@@ -1,5 +1,5 @@
 ﻿using Fomo.Api.Helpers;
-using Fomo.Application.DTO;
+using Fomo.Application.DTO.TradeResult;
 using Fomo.Domain.Entities;
 using Fomo.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -27,13 +27,13 @@ namespace Fomo.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody] TradeResultDTO tradeResult)
+        public async Task<IActionResult> Create([FromBody] TradeResultCreateDTO tradeResult)
         {
             if (tradeResult == null) return BadRequest("Invalid tradeResult");
 
             if (!_tradeResultValidateHelper.IsValidTradeResultDTO(tradeResult)) return BadRequest("Invalid tradeResult");
 
-            var userData = await _userValidateHelper.GetAuthenticatedUserAsync(User);
+            var userData = await _userValidateHelper.GetUserIdAsync(User);
             if (userData == null) return NotFound("Invalid User");
 
             var newTradeResult = new TradeResult()
@@ -62,7 +62,7 @@ namespace Fomo.Api.Controllers
 
             return Ok("TradeResult created succesfully");
         }
-                
+
         [HttpGet("all")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(List<TradeResultDTO>), StatusCodes.Status200OK)]
@@ -71,27 +71,7 @@ namespace Fomo.Api.Controllers
             var tradeResults = await _tradeResultRepository.GetAllAsync();
             if (tradeResults == null) return NotFound("No TradeResults found");
 
-            var tradeResultsDTO = tradeResults.Select(tr => new TradeResultDTO
-            {
-                Symbol = tr.Symbol,
-                EntryPrice = tr.EntryPrice,
-                ExitPrice = tr.ExitPrice,                
-                Profit = tr.Profit,
-                NumberOfStocks = tr.NumberOfStocks,
-                EntryDate = tr.EntryDate,
-                ExitDate = tr.ExitDate,
-                TradeMethod = new TradeMethodDTO
-                {
-                    Sma = tr.TradeMethod?.Sma ?? false,
-                    Bollinger = tr.TradeMethod?.Bollinger ?? false,
-                    Stochastic = tr.TradeMethod?.Stochastic ?? false,
-                    Rsi = tr.TradeMethod?.Rsi ?? false,
-                    Other = tr.TradeMethod?.Other ?? false,
-                },
-                UserName = tr.User?.Name,
-            }).ToList();
-
-            return Ok(tradeResultsDTO);
+            return Ok(tradeResults);
         }
 
         [Authorize]
@@ -99,12 +79,12 @@ namespace Fomo.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Edit([FromBody] TradeResultDTO Update)
+        public async Task<IActionResult> Edit([FromBody] TradeResultUpdateDTO Update)
         {
             if (Update == null) return BadRequest("TradeResult cannot be null");
             if (Update.TradeResultId == null) return BadRequest("Id cannot be null");
 
-            var userData = await _userValidateHelper.GetAuthenticatedUserAsync(User);
+            var userData = await _userValidateHelper.GetUserIdAsync(User);
             if (userData == null) return NotFound("Invalid User");
 
             var tradeResult = await _tradeResultRepository.GetByIdAsync(Update.TradeResultId.Value);
@@ -144,7 +124,7 @@ namespace Fomo.Api.Controllers
         {
             if (id < 0) return BadRequest("Invalid TradeResultId");
 
-            var userData = await _userValidateHelper.GetAuthenticatedUserAsync(User);
+            var userData = await _userValidateHelper.GetUserIdAsync(User);
             if (userData == null) return NotFound("Invalid User");
 
             var tradeResult = await _tradeResultRepository.GetByIdAsync(id);

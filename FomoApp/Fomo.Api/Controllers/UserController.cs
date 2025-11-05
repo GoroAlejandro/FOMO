@@ -1,5 +1,6 @@
 ﻿using Fomo.Api.Helpers;
-using Fomo.Application.DTO;
+using Fomo.Application.DTO.TradeResult;
+using Fomo.Application.DTO.User;
 using Fomo.Domain.Entities;
 using Fomo.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -58,14 +59,15 @@ namespace Fomo.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Details()
         {
-            var userData = await _userValidateHelper.GetAuthenticatedUserAsync(User);
+            var userData = await _userValidateHelper.GetFullUserAsync(User);
             if (userData == null) return NotFound("Invalid User");
 
-            var tradeResultsDTO = new List<TradeResultDTO>();
+            var tradeResultsDTO = new List<UserTradeResultDTO>();
             if (userData.TradeResults != null)
             {
-                tradeResultsDTO = userData.TradeResults.Select(tr => new TradeResultDTO
+                tradeResultsDTO = userData.TradeResults.Select(tr => new UserTradeResultDTO
                 {
+                    TradeResultId = tr.TradeResultId,
                     Symbol = tr.Symbol,
                     EntryPrice = tr.EntryPrice,
                     ExitPrice = tr.ExitPrice,
@@ -80,8 +82,7 @@ namespace Fomo.Api.Controllers
                         Stochastic = tr.TradeMethod?.Stochastic ?? false,
                         Rsi = tr.TradeMethod?.Rsi ?? false,
                         Other = tr.TradeMethod?.Other ?? false,
-                    },
-                    UserName = tr.User?.Name,
+                    }
                 }).ToList();
             }
 
@@ -105,9 +106,9 @@ namespace Fomo.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Edit([FromBody] UserDTO userUpdate)
+        public async Task<IActionResult> Edit([FromBody] UserUpdateDTO userUpdate)
         {
-            var userData = await _userValidateHelper.GetAuthenticatedUserAsync(User);
+            var userData = await _userValidateHelper.GetOnlyUserAsync(User);
             if (userData == null) return NotFound("Invalid User");
 
             if (!String.IsNullOrEmpty(userUpdate.Name)) userData.Name = userUpdate.Name;

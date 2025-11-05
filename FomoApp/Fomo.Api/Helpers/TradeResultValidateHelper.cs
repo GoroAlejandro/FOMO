@@ -1,10 +1,10 @@
-﻿using Fomo.Application.DTO;
+﻿using Fomo.Application.DTO.TradeResult;
 
 namespace Fomo.Api.Helpers
 {
     public class TradeResultValidateHelper : ITradeResultValidateHelper
     {
-        public bool IsValidTradeResultDTO(TradeResultDTO tradeResult)
+        public bool IsValidTradeResultDTO(TradeResultCreateDTO tradeResult)
         {
             if (String.IsNullOrEmpty(tradeResult.Symbol) || tradeResult.EntryPrice <= 0 || tradeResult.ExitPrice <= 0 ||
                 tradeResult.NumberOfStocks <= 0 || tradeResult.EntryDate < new DateTime(2025, 1, 1, 0, 0, 0) ||

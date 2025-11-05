@@ -1,4 +1,4 @@
-﻿using Fomo.Application.DTO;
+﻿using Fomo.Application.DTO.StockDataDTO;
 using System.Globalization;
 using System.Linq.Expressions;
 

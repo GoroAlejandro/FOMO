@@ -1,4 +1,5 @@
-﻿using Fomo.Application.DTO;
+﻿using Fomo.Application.DTO.IndicatorsDTO;
+using Fomo.Application.DTO.StockDataDTO;
 using Fomo.Application.Services;
 using Fomo.Infrastructure.ExternalServices;
 using Microsoft.AspNetCore.Mvc;

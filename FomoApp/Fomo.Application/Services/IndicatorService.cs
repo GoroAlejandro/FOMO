@@ -1,4 +1,5 @@
-﻿using Fomo.Application.DTO;
+﻿using Fomo.Application.DTO.IndicatorsDTO;
+using Fomo.Application.DTO.StockDataDTO;
 using Fomo.Application.Services.Indicators;
 
 namespace Fomo.Application.Services
