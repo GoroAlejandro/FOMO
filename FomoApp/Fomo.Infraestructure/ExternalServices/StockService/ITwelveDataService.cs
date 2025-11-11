@@ -1,6 +1,6 @@
 ﻿using Fomo.Application.DTO.StockDataDTO;
 
-namespace Fomo.Infrastructure.ExternalServices
+namespace Fomo.Infrastructure.ExternalServices.StockService
 {
     public interface ITwelveDataService
     {

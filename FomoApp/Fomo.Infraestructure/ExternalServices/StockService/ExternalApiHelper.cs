@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using System.Text.Json;
 
-namespace Fomo.Infrastructure.ExternalServices
+namespace Fomo.Infrastructure.ExternalServices.StockService
 {
     public class ExternalApiHelper : IExternalApiHelper
     {

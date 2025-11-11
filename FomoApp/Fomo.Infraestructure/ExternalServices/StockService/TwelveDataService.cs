@@ -1,7 +1,7 @@
 ﻿using Fomo.Application.DTO.StockDataDTO;
 using Microsoft.Extensions.Options;
 
-namespace Fomo.Infrastructure.ExternalServices
+namespace Fomo.Infrastructure.ExternalServices.StockService
 {
     public class TwelveDataService : ITwelveDataService
     {

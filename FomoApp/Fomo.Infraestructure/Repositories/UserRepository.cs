@@ -86,6 +86,36 @@ namespace Fomo.Infrastructure.Repositories
             return user;
         }
 
+        public async Task<List<NameAndMail>> GetUsersByAlertAsync(AlertType alertType)
+        {
+            IQueryable<User> query = _dbContext.Users;
+
+            switch (alertType)
+            {
+                case AlertType.Sma:
+                    query = query.Where(u => u.SmaAlert);
+                    break;
+                case AlertType.Bollinger:
+                    query = query.Where(u => u.BollingerAlert);
+                    break;
+                case AlertType.Stochastic:
+                    query = query.Where(u => u.StochasticAlert);
+                    break;
+                case AlertType.Rsi:
+                    query = query.Where(u => u.RsiAlert);
+                    break;
+            }
+
+            return await query
+                .Select(u => new NameAndMail
+                {
+                    Name = u.Name,
+                    Email = u.Email
+                })
+                .ToListAsync();
+        }
+
+
         public async Task InsertAsync(User user)
         {
             bool exist = await _dbContext.Users.AnyAsync(u => u.Auth0Id == user.Auth0Id);
