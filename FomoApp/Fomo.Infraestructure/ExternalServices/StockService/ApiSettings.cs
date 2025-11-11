@@ -1,4 +1,4 @@
-﻿namespace Fomo.Infrastructure.ExternalServices
+﻿namespace Fomo.Infrastructure.ExternalServices.StockService
 {
     public class ApiSettings
     {

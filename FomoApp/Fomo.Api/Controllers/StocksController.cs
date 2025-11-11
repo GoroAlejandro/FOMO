@@ -1,8 +1,11 @@
 ﻿using Fomo.Application.DTO.IndicatorsDTO;
 using Fomo.Application.DTO.StockDataDTO;
 using Fomo.Application.Services;
-using Fomo.Infrastructure.ExternalServices;
+using Fomo.Application.Services.Indicators;
+using Fomo.Infrastructure.ExternalServices.MailService;
+using Fomo.Infrastructure.ExternalServices.StockService;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.Intrinsics.X86;
 
 namespace Fomo.Api.Controllers
 {
@@ -10,13 +13,14 @@ namespace Fomo.Api.Controllers
     public class StocksController : Controller
     {
         private readonly ITwelveDataService _twelveDataService;
-
         private readonly IIndicatorService _indicatorService;
+        private readonly IAlertService _alertService;
 
-        public StocksController (ITwelveDataService twelveDataService, IIndicatorService indicatorService)
+        public StocksController (ITwelveDataService twelveDataService, IIndicatorService indicatorService, IAlertService alertService)
         {
             _twelveDataService = twelveDataService;
             _indicatorService = indicatorService;
+            _alertService = alertService;
         }
 
         [HttpGet]
@@ -62,6 +66,13 @@ namespace Fomo.Api.Controllers
             }
 
             var sma = _indicatorService.GetSMA(timeseries.Values, period);
+
+            var parser = new ParseListHelper();
+            var closes = parser.ParseList(timeseries.Values, v => v.Close);
+
+            string indicator = $"SMA with a period of {period}";
+            await _alertService.SendSmaAlert(closes, sma, symbol, indicator);
+
             return Ok(sma);
         }
 
@@ -84,6 +95,13 @@ namespace Fomo.Api.Controllers
             }
 
             var bollingerBands = _indicatorService.GetBollingerBands(timeseries.Values, period, k);
+
+            var parser = new ParseListHelper();
+            var closes = parser.ParseList(timeseries.Values, v => v.Close);
+
+            string indicator = $"Bollinger Bands with a period of {period} and a k of {k}";
+            await _alertService.SendBollingerAlert(closes, bollingerBands.LowerBand, symbol, indicator);
+
             return Ok(bollingerBands);
         }
 
@@ -106,6 +124,10 @@ namespace Fomo.Api.Controllers
             }
 
             var stochasticOscillator = _indicatorService.GetStochastic(timeseries.Values, period, smaperiod);
+
+            string indicator = $"Stochastic Oscilator with a period of {period} and a SMA period of {smaperiod}";
+            await _alertService.SendStochasticAlert(stochasticOscillator.k, stochasticOscillator.d, symbol, indicator);
+
             return Ok(stochasticOscillator);
         }
 
@@ -128,6 +150,10 @@ namespace Fomo.Api.Controllers
             }
 
             var rsi = _indicatorService.GetRSI(timeseries.Values, period);
+
+            string indicator = $"RSI with a period of {period}";
+            await _alertService.SendRsiAlert(rsi, symbol, indicator);
+
             return Ok(rsi);
         }
 
@@ -150,6 +176,10 @@ namespace Fomo.Api.Controllers
             }
 
             var srsi = _indicatorService.GetSmoothedRSI(timeseries.Values, period);
+
+            string indicator = $"Smoothed RSI with a period of {period}";
+            await _alertService.SendRsiAlert(srsi, symbol, indicator);
+
             return Ok(srsi);
         }
     }

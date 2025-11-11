@@ -1,11 +1,13 @@
 using Fomo.Api.Helpers;
 using Fomo.Application.Services;
-using Fomo.Infrastructure.ExternalServices;
+using Fomo.Infrastructure.ExternalServices.StockService;
+using Fomo.Infrastructure.ExternalServices.MailService;
 using Fomo.Infrastructure.Persistence;
 using Fomo.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using System;
+using Fomo.Infrastructure.ExternalServices.MailService.Alerts;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +40,8 @@ builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSet
 
 builder.Services.Configure<TwelveData>(builder.Configuration.GetSection("TwelveData"));
 
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
 builder.Services.AddScoped<IExternalApiHelper, ExternalApiHelper>();
 
 builder.Services.AddScoped<ITwelveDataService, TwelveDataService>();
@@ -51,6 +55,12 @@ builder.Services.AddScoped<ITradeResultRepository, TradeResultRepository>();
 builder.Services.AddScoped<IUserValidateHelper, UserValidateHelper>();
 
 builder.Services.AddScoped<ITradeResultValidateHelper, TradeResultValidateHelper>();
+
+builder.Services.AddScoped<IEmailService, EmailService>();
+
+builder.Services.AddScoped<IGenericAlert, GenericAlert>();
+
+builder.Services.AddScoped<IAlertService, AlertService>();
 
 var app = builder.Build();
 
