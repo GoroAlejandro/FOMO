@@ -1,7 +1,5 @@
 ﻿using Fomo.Application.DTO.StockDataDTO;
 using System.Globalization;
-using System.Linq.Expressions;
-
 
 namespace Fomo.Application.Services.Indicators
 {
@@ -21,6 +19,8 @@ namespace Fomo.Application.Services.Indicators
                 decimal.TryParse(value, CultureInfo.InvariantCulture, out Price);
                 valuesd.Add(Price);
             }
+
+            valuesd.Reverse();
 
             return valuesd;
         }
