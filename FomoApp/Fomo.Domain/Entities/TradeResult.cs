@@ -15,9 +15,9 @@ namespace Fomo.Domain.Entities
         public DateTime ExitDate { get; set; }
         public int UserId { get; set; }
 
-        public User? User { get; set; }
+        public User User { get; set; } = null!;
 
-        public TradeMethod? TradeMethod { get; set; }
+        public TradeMethod TradeMethod { get; set; } = null!;
 
         public void CalculateProfit()
         {

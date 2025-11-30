@@ -4,9 +4,9 @@ namespace Fomo.Infrastructure.ExternalServices.StockService
 {
     public interface ITwelveDataService
     {
-        Task<StockResponseDTO> GetStocks();
+        Task<StockResponseDTO?> GetStocks();
 
-        Task<ValuesResponseDTO> GetTimeSeries(string symbol);
+        Task<ValuesResponseDTO?> GetTimeSeries(string symbol);
 
     }
 }

@@ -19,6 +19,20 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddHttpClient<IExternalApiHelper, ExternalApiHelper>();
 
+var MyPolicy = "AllowFrontend";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyPolicy,
+    policy =>
+    {
+        policy
+            .WithOrigins($"{builder.Configuration["FrontendUrl:Url"]}")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -56,11 +70,15 @@ builder.Services.AddScoped<IUserValidateHelper, UserValidateHelper>();
 
 builder.Services.AddScoped<ITradeResultValidateHelper, TradeResultValidateHelper>();
 
+builder.Services.AddScoped<IStockRepository, StockRepository>();
+
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddScoped<IGenericAlert, GenericAlert>();
 
 builder.Services.AddScoped<IAlertService, AlertService>();
+
+builder.Services.AddScoped<IStockSyncService, StockSyncService>();
 
 var app = builder.Build();
 
@@ -73,9 +91,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors(MyPolicy);
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var syncService = scope.ServiceProvider.GetRequiredService<IStockSyncService>();
+    await syncService.SyncStockDb();
+}
 
 app.Run();

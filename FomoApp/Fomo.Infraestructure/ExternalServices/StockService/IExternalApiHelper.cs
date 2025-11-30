@@ -2,6 +2,6 @@
 {
     public interface IExternalApiHelper
     {
-        Task<T> GetAsync<T>(string endpoint);
+        Task<T?> GetAsync<T>(string endpoint);
     }
 }

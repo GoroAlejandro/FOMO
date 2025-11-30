@@ -1,5 +1,4 @@
-﻿using Fomo.Application.DTO;
-using Fomo.Application.DTO.TradeResult;
+﻿using Fomo.Application.DTO.TradeResult;
 using Fomo.Domain.Entities;
 using Fomo.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -78,12 +77,12 @@ namespace Fomo.Infrastructure.Repositories
             await _dbContext.TradeResults.AddAsync(tradeResult);            
         }
 
-        public async Task UpdateAsync(TradeResult tradeResult)
+        public void UpdateAsync(TradeResult tradeResult)
         {
             _dbContext.TradeResults.Update(tradeResult);
         }
 
-        public async Task DeleteAsync(TradeResult tradeResult)
+        public void DeleteAsync(TradeResult tradeResult)
         {            
             if (tradeResult != null)
             {
