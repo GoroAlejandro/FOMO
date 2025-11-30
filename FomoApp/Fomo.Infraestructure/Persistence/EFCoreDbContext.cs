@@ -34,10 +34,29 @@ namespace Fomo.Infrastructure.Persistence
                     t.HasCheckConstraint("CK_Product_ExitPrice_NonNegative", "[ExitPrice] >= 0");
                     t.HasCheckConstraint("CK_Product_NumberOfStocks_NonNegative", "[NumberOfStocks] >= 0");
                 });
+
+            modelBuilder.Entity<TradeResult>()
+                .Property(tr => tr.EntryPrice)
+                .HasPrecision(18, 6);
+            
+            modelBuilder.Entity<TradeResult>()
+                .Property(tr => tr.ExitPrice)
+                .HasPrecision(18, 6);
+            
+            modelBuilder.Entity<TradeResult>()
+                .Property(tr => tr.Profit)
+                .HasPrecision(18, 6);
+            
+            modelBuilder.Entity<Stock>()
+                .HasIndex(s => s.Symbol);
+
+            modelBuilder.Entity<Stock>()
+                .HasIndex(s => s.Name);
         }
 
         public DbSet<User> Users { get; set; }
         public DbSet<TradeResult> TradeResults { get; set; }
         public DbSet<TradeMethod> TradeMethods { get; set; }
+        public DbSet<Stock> Stocks { get; set; }
     }
 }

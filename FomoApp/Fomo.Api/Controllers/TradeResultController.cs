@@ -109,7 +109,7 @@ namespace Fomo.Api.Controllers
             }
 
             tradeResult.CalculateProfit();
-            await _tradeResultRepository.UpdateAsync(tradeResult);
+            _tradeResultRepository.UpdateAsync(tradeResult);
             await _tradeResultRepository.SaveAsync();
 
             return Ok();
@@ -132,7 +132,7 @@ namespace Fomo.Api.Controllers
 
             if (tradeResult.UserId != userData.UserId) return BadRequest("Only the creator can delete this post");
 
-            await _tradeResultRepository.DeleteAsync(tradeResult);
+            _tradeResultRepository.DeleteAsync(tradeResult);
             await _tradeResultRepository.SaveAsync();
 
             return Ok("TradeResult deleted succesfully");

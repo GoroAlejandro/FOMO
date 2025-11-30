@@ -15,7 +15,7 @@ namespace Fomo.Infrastructure.ExternalServices.StockService
             _httpClient.BaseAddress = new Uri(_apiSettings.BaseUrl);
         }
 
-        public async Task<T> GetAsync<T> (string endpoint)
+        public async Task<T?> GetAsync<T> (string endpoint)
         {
             try
             {

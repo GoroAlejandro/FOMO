@@ -8,8 +8,8 @@ namespace Fomo.Infrastructure.Repositories
         Task<TradeResult?> GetByIdAsync(int id);
         Task<List<TradeResultDTO>> GetAllAsync();
         Task InsertAsync(TradeResult tradeResult);
-        Task UpdateAsync(TradeResult tradeResult);
-        Task DeleteAsync(TradeResult tradeResult);
+        void UpdateAsync(TradeResult tradeResult);
+        void DeleteAsync(TradeResult tradeResult);
         Task SaveAsync();
     }
 }

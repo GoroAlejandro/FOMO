@@ -4,6 +4,7 @@ using Fomo.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fomo.Infrastructure.Migrations
 {
     [DbContext(typeof(EFCoreDbContext))]
-    partial class EFCoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251130014833_CreateStockTable")]
+    partial class CreateStockTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -101,22 +104,19 @@ namespace Fomo.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("EntryPrice")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("decimal(18,6)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("ExitDate")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("ExitPrice")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("decimal(18,6)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("NumberOfStocks")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Profit")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("decimal(18,6)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Symbol")
                         .IsRequired()
@@ -210,8 +210,7 @@ namespace Fomo.Infrastructure.Migrations
 
             modelBuilder.Entity("Fomo.Domain.Entities.TradeResult", b =>
                 {
-                    b.Navigation("TradeMethod")
-                        .IsRequired();
+                    b.Navigation("TradeMethod");
                 });
 
             modelBuilder.Entity("Fomo.Domain.Entities.User", b =>

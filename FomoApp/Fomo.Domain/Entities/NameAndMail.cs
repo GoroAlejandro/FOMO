@@ -1,4 +1,4 @@
-﻿namespace Fomo.Infrastructure.Repositories
+﻿namespace Fomo.Domain.Entities
 {
     public class NameAndMail
     {
